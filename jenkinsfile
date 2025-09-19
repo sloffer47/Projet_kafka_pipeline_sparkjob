@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Airflow DAG Trigger') {
+            steps {
+                echo 'Triggering Airflow DAG...'
+                sh 'curl -X POST http://localhost:8080/api/v1/dags/kafka_postgres_dag/dagRuns -H "Content-Type: application/json" -d \'{"conf":{}}\'' 
+            }
+        }
+
+        stage('Spark Job') {
+            steps {
+                echo 'Submitting Spark job...'
+                sh '/opt/bitnami/spark/bin/spark-submit --master spark://spark-master:7077 ./dags/spark_job.py'
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+  "kafka": {
+    "statut": "sain",
+    "nombre_topics": 0,
+    "topics": []
+  },
+  "base": {
+    "statut": "sain",
+    "details": {
+      "connexion": true,
+      "total_commandes": 21465,
+      "taille_base": "12 MB"
+    }
+  },
+  "conteneurs": {
+    "statut": "sain",
+    "conteneurs": {}
+  },
+  "nettoyage": {
+    "logs_supprimes": 0
+  },
+  "optimisation": {
+    "optimisation": "ok",
+    "taille_db": "12 MB"
+  },
+  "horodatage": "2025-09-19T09:01:43.030168"
+}
