@@ -21,15 +21,15 @@ pipeline {
         stage('📋 Verify Files') {
             steps {
                 echo 'Vérification des fichiers du projet...'
-                sh 'ls -la'
-                sh 'test -f jobspark.py || echo "jobspark.py non trouvé"'
-                sh 'test -f Dockerfile || echo "Dockerfile non trouvé"'
+                sh 'ls -la jobspark/'
+                sh 'test -f jobspark/jobspark.py || echo "jobspark.py non trouvé"'
+                sh 'test -f jobspark/Dockerfile || echo "Dockerfile non trouvé"'
             }
         }
 
         stage('🔑 Test SSH Connection') {
             steps {
-                sshagent(['ec2-ssh-key']) {
+                sshagent([SSH_CREDENTIALS]) {
                     sh 'ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "echo ✅ Connexion SSH réussie"'
                 }
             }
@@ -37,7 +37,7 @@ pipeline {
 
         stage('🚀 Build & Deploy Docker Image') {
             steps {
-                sshagent(credentials: ["${SSH_CREDENTIALS}"]) {
+                sshagent([SSH_CREDENTIALS]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} '
                             echo "🧹 Nettoyage anciens containers..."
@@ -47,7 +47,7 @@ pipeline {
 
                             echo "🔨 Construction image Docker jobspark..."
                             cd ~/ && git clone -b main ${GITHUB_REPO} temp_jobspark || (cd temp_jobspark && git pull)
-                            cd temp_jobspark
+                            cd temp_jobspark/jobspark
                             docker build -t ${DOCKER_IMAGE} .
 
                             echo "🚀 Lancement du container Spark Job..."
@@ -95,7 +95,7 @@ pipeline {
         failure {
             echo '''
             ❌ ÉCHEC DU DÉPLOIEMENT JOBSPARK
-            🔍 Vérifiez les logs et l état Docker sur le serveur
+            🔍 Vérifiez les logs et l'état Docker sur le serveur
             '''
         }
     }
